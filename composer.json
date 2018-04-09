@@ -1,0 +1,18 @@
+{
+  "name": "herrtamm/magicdi",
+  "type": "library",
+  "description": "MagicDI is an IDE-friendly Dependency Injection Container",
+  "keywords": ["dependency injection", "container"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Rasmus Tamm",
+      "email": "rasmus.tamm1@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "MagicDI\\": "src/"
+    }
+  }
+}
