@@ -22,12 +22,12 @@ class Factory extends Container
             return $hasProperty->$name;
         }
 
-        $output = $this->$name;
+        $output = $this->properties[$name];
 
         if (!is_callable($output)) {
             return $output;
         }
 
-        return call_user_func($output($this->parentContainer));
+        return call_user_func($output, $this->parentContainer);
     }
 }

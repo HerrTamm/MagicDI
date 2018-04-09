@@ -6,6 +6,8 @@ use Exception;
 
 class Container implements ContainerInterface
 {
+    protected $properties;
+
     /** @var array */
     protected $childContainers;
 
@@ -37,7 +39,11 @@ class Container implements ContainerInterface
             return $this->addCallable($name, $value);
         }
 
-        $this->$name = $value;
+        if ($value instanceof ContainerInterface) {
+            $this->childContainers[] = $name;
+        }
+
+        $this->properties[$name] = $value;
 
         return $this;
     }
@@ -68,15 +74,15 @@ class Container implements ContainerInterface
             return $hasProperty->$name;
         }
 
-        $output = $this->$name;
+        $output = $this->properties[$name];
 
         if (!is_callable($output)) {
             return $output;
         }
 
-        $this->$name = call_user_func($output($this->parentContainer));
+        $this->properties[$name] = call_user_func($output, $this->parentContainer);
 
-        return $this->$name;
+        return $this->properties[$name];
     }
 
     /**
@@ -85,13 +91,17 @@ class Container implements ContainerInterface
      */
     protected function hasProperty($name)
     {
-        if (isset($this->$name)) {
+        if (isset($this->properties[$name])) {
             return $this;
         }
 
+        if (!is_array($this->childContainers)) {
+            return null;
+        }
+
         foreach ($this->childContainers as $container) {
-            if (isset($container->$name)) {
-                return $container;
+            if (isset($this->properties[$container]->$name)) {
+                return $this->properties[$container];
             }
         }
 
@@ -113,7 +123,7 @@ class Container implements ContainerInterface
             throw new Exception("Property {$name} already defined in {$class}");
         }
 
-        $this->$name = $callable;
+        $this->properties[$name] = $callable;
 
         return $this;
     }
